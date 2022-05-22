@@ -1,0 +1,1 @@
+export const TypographyColor = "#e6e6e6";
