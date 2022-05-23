@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 interface GridContainerProps {
     spacing?: number;
     boxSx?: object;
+    gridSx?: object;
     children: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ export const GridContainer = function(props: GridContainerProps) {
             <Grid 
                 container 
                 spacing={props.spacing || 2}
+                sx={props.gridSx}
             >
                 {props.children}
             </Grid>

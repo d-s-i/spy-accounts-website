@@ -20,6 +20,8 @@ export function CustomizedDataGrid(props: CustomizedDataGridProps) {
         headerHeight={30}
         rowHeight={props.rowHeight}
         autoHeight
+        showColumnRightBorder
+        
       />
     </span>
   );
