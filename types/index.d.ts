@@ -13,7 +13,7 @@ export interface ContractData {
     organizedTransactions?: OrganizedTransaction[]
 } 
 
-export interface OrganizedTransaction {
+export interface OrganizedTransactionFromBDD {
     transactionHash: string,
     organizedFunctionCalls: FunctionCall[]
 }

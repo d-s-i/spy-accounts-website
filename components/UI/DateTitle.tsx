@@ -9,6 +9,6 @@ interface DateProps {
 
 export const DateTitle = function(props: DateProps) {
     return (
-        <Typography fontSize="2.5em" align="center">{`Accounts Activity (${formatDate(props.date)})`}</Typography>
+        <Typography fontSize="2.5em" align="center" sx={{ margin: "3% 0% 3% 0%" }}>{`Accounts Activity (${formatDate(props.date)})`}</Typography>
     );
 }

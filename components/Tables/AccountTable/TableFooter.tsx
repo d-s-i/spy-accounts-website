@@ -31,7 +31,7 @@ export const TableFooter = function(props: TableFooterProps) {
                 </Typography>
             </Box>
             <Box sx={{ width: "50%", display: "flex", justifyContent: "flex-end" }}>
-                {(props.amountToDisplay <= props.totalAmount) && (
+                {(props.amountToDisplay < props.totalAmount) && (
                     <IconButton aria-label="add" onClick={addAmountHandler}>
                         <AddIcon sx={{ fontSize: "1.5em" }} />
                     </IconButton>

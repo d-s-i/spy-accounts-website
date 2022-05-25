@@ -25,9 +25,14 @@ let theme = createTheme({
     },
   },
   palette: {
+    primary: {
+      dark: "#0d0d0d",
+      light: "#262626",
+      main: "#1a1a1a",
+    },
     background: {
-      default: "#262626",
-      paper: "#262626"
+      default: "#1a1a1a",
+      paper: "#1a1a1a"
     }
   }
 });

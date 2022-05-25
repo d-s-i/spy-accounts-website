@@ -16,3 +16,7 @@ export const uintToBN = function(num: { low: BigNumber, high: BigNumber }) {
   const BN = BigNumber.from(num.low).add(BigNumber.from(num.high));
   return BN.toHexString();
 }
+
+export const getYesterdayFromDate = function(_date: Date) {
+  return `${_date.getFullYear()}-${_date.getMonth() + 1}-${_date.getDate() - 1}`;
+}

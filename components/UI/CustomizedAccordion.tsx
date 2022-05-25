@@ -26,10 +26,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     {...props}
   />
 ))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === 'dark'
-      ? 'rgba(255, 255, 255, .05)'
-      : 'rgba(0, 0, 0, .03)',
+  backgroundColor: theme.palette.primary.dark,
   flexDirection: 'row-reverse',
   '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
     transform: 'rotate(90deg)',
@@ -37,35 +34,72 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
   '& .MuiAccordionSummary-content': {
     marginLeft: theme.spacing(1),
   },
+  
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
+  backgroundColor: theme.palette.primary.main,
   borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
+interface expandedState {
+  [key: string]: {
+      value: boolean, 
+      setTrue: () => void, 
+      setFalse: () => void
+  }
+}
+
+
 interface CustomizedAccordionProps {
-    title: string;
-    details: string | React.ReactNode;
+  index: string;
+  title: string;
+  details: string | React.ReactNode;
+  initiallyOpen: boolean;
+  forceExpandAll: boolean;
+  onExpandAllChange?: () => void;
+  getStateForIndex?: (settersObject: expandedState) => void; 
+  width?: string | number;
 }
 
 export function CustomizedAccordion(props: CustomizedAccordionProps) {
-    const [expanded, setExpanded] = React.useState<boolean>(false);
-  
-    const handleChange = function() {
-        setExpanded(!expanded);
-    };
+    const [expanded, setExpanded] = React.useState<boolean>(props.initiallyOpen);
+
+    const changeHandler = function() {
+      props.forceExpandAll && props.onExpandAllChange && props.onExpandAllChange();
+      
+      !props.forceExpandAll && setExpanded(prevState => {
+        return !prevState;
+      });
+    }
+
+    const setExpandedTrue = function() {
+      setExpanded(true);
+    }
+
+    const setExpandedFalse = function() {
+      setExpanded(false);
+    }
+
+    React.useEffect(() => {
+      props.getStateForIndex && props.getStateForIndex({
+        [props.index]: { value: expanded, setTrue: setExpandedTrue, setFalse: setExpandedFalse } 
+      });
+    }, [expanded]);
   
     return (
-      <div>
-        <Accordion expanded={expanded} onChange={handleChange} sx={{ color: "white" }}>
-          <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-            <Typography component="span">{props.title}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography component="span">{props.details}</Typography>
-          </AccordionDetails>
-        </Accordion>
-      </div>
+      <Accordion 
+        expanded={expanded} 
+        onChange={changeHandler} 
+        sx={{ border: "1px #000000 solid", width: props.width || "100%" }}
+      >
+        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+          <Typography component="span">{props.title}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography component="span">{props.details}</Typography>
+        </AccordionDetails>
+      </Accordion>
     );
   }
