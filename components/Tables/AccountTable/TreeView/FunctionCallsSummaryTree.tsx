@@ -25,7 +25,7 @@ export function FunctionCallsSummaryTree(props: FunctionCallsSummaryTreeProps) {
     }
     setCallsSummary(listItems);
 
-  }, []);
+  }, [props.callsSummary]);
 
   const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
     setExpanded(nodeIds);

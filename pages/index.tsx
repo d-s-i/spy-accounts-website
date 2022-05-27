@@ -29,65 +29,65 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
   const [accountsStates, setAccountsStates] = React.useState<AccountState[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const getArgsSizes = function(value: { [key: string]: any }) {
-    let argsAmount = 0;
-    if(value.type === "BigNumber") {
-      argsAmount++;
-    } else {
-      Object.entries(value).map(([_key, _value]) => {
-        if(_value.type === "BigNumber") {
-          argsAmount++;
-        } else {
-          argsAmount += getArgsSizes(_value);
-        }
-      });
-    }
-    return argsAmount;
-  }
-
-  const getFnCallsData = function(functionCalls: FunctionCall[], callsSummary: CallsSummary) {
-    let _maxArgs: number[] = [];
-    let _maxFnNameLength: number[] = [];
-
-    let fnCalls = [];
-    let allArgs = [];
-    for(const i in functionCalls) {
-      if(!callsSummary[functionCalls[i].name]) {
-        callsSummary[functionCalls[i].name] = { amount: 1, addresses: [BigNumber.from(functionCalls[i].to).toHexString()] };
-      } else {
-        const to = BigNumber.from(functionCalls[i].to).toHexString();
-        const addresses = callsSummary[functionCalls[i].name].addresses.includes(to) ? 
-          callsSummary[functionCalls[i].name].addresses : [...callsSummary[functionCalls[i].name].addresses, to];
-
-        callsSummary[functionCalls[i].name] = { amount: callsSummary[functionCalls[i].name].amount + 1, addresses };
-      }
-      _maxFnNameLength.push(functionCalls[i].name.length);
-      allArgs.push(...functionCalls[i].calldata);
-
-      const to = BigNumber.from(functionCalls[i].to._hex);
-      fnCalls.push({
-        id: parseFloat(i),
-        name: functionCalls[i].name,
-        to: to.toHexString(),
-        calldata: functionCalls[i].calldata,
-      });
-    }
-
-    for(const arg of allArgs) {
-      _maxArgs.push(getArgsSizes(JSON.parse(arg.value)));
-    }
-
-    const rowHeight = Math.max(..._maxArgs) > 1 ? (45 * Math.max(..._maxArgs)) : 100;
-    const rowWidth = Math.max(..._maxFnNameLength) * 10;
-    
-    return {
-      rowSize: { width: rowWidth, height: rowHeight },
-      fnCallsPerTx: fnCalls
-    };
-  }
-
   React.useEffect(() => {
     if(!starknetDay?.organizedAccountsActivity) return;
+    const getArgsSizes = function(value: { [key: string]: any }) {
+      let argsAmount = 0;
+      if(value.type === "BigNumber") {
+        argsAmount++;
+      } else {
+        Object.entries(value).map(([_key, _value]) => {
+          if(_value.type === "BigNumber") {
+            argsAmount++;
+          } else {
+            argsAmount += getArgsSizes(_value);
+          }
+        });
+      }
+      return argsAmount;
+    }
+    
+    const getFnCallsData = function(functionCalls: FunctionCall[], callsSummary: CallsSummary) {
+      let _maxArgs: number[] = [];
+      let _maxFnNameLength: number[] = [];
+  
+      let fnCalls = [];
+      let allArgs = [];
+      for(const i in functionCalls) {
+        if(!callsSummary[functionCalls[i].name]) {
+          callsSummary[functionCalls[i].name] = { amount: 1, addresses: [BigNumber.from(functionCalls[i].to).toHexString()] };
+        } else {
+          const to = BigNumber.from(functionCalls[i].to).toHexString();
+          const addresses = callsSummary[functionCalls[i].name].addresses.includes(to) ? 
+            callsSummary[functionCalls[i].name].addresses : [...callsSummary[functionCalls[i].name].addresses, to];
+  
+          callsSummary[functionCalls[i].name] = { amount: callsSummary[functionCalls[i].name].amount + 1, addresses };
+        }
+        _maxFnNameLength.push(functionCalls[i].name.length);
+        allArgs.push(...functionCalls[i].calldata);
+  
+        const to = BigNumber.from(functionCalls[i].to._hex);
+        fnCalls.push({
+          id: parseFloat(i),
+          name: functionCalls[i].name,
+          to: to.toHexString(),
+          calldata: functionCalls[i].calldata,
+        });
+      }
+  
+      for(const arg of allArgs) {
+        _maxArgs.push(getArgsSizes(JSON.parse(arg.value)));
+      }
+  
+      const rowHeight = Math.max(..._maxArgs) > 1 ? (45 * Math.max(..._maxArgs)) : 100;
+      const rowWidth = Math.max(..._maxFnNameLength) * 10;
+      
+      return {
+        rowSize: { width: rowWidth, height: rowHeight },
+        fnCallsPerTx: fnCalls
+      };
+    }
+
     setIsLoading(true);
     let _intermediaryAccountsState = [];
     for(const [address, _organizedAccount] of Object.entries(starknetDay.organizedAccountsActivity)) {            

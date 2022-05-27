@@ -91,7 +91,7 @@ export function AccountTreeView(props: AccountTreeViewProps) {
           <TransactionControlledTreeView functionCallsPerAccount={props.functionCallsPerAccount} />
         </TreeItem>
       </TreeView>}
-      {!props.functionCallsPerAccount || props.functionCallsPerAccount.length === 0 && <Typography>Couldn't organize transaction for this account.</Typography>}
+      {!props.functionCallsPerAccount || props.functionCallsPerAccount.length === 0 && <Typography>Couldn&apos;t organize transaction for this account.</Typography>}
     </Box>
   );
 }
