@@ -1,9 +1,9 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
+import { NetworkContextProvider } from "../context/network-context";
 import { ThemeProvider, createTheme, responsiveFontSizes  } from '@mui/material/styles';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 
-import { API_PORT } from "../api/constants";
 import { TypographyColor } from "../utils/constants";
 
 let theme = createTheme({
@@ -13,14 +13,13 @@ let theme = createTheme({
         color: TypographyColor
       }
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: { color: TypographyColor }
-      }
-    },
     MuiDataGrid: {
       styleOverrides: {
-        root: {},
+        root: {
+          '& .MuiDataGrid-main > div:nth-child(2)': {
+            height: 'fit-content !important',
+          },
+        },
       },
     },
   },
@@ -41,7 +40,9 @@ theme = responsiveFontSizes(theme);
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
-      <Component apiPort={API_PORT} {...pageProps} />
+      <NetworkContextProvider>
+        <Component {...pageProps} />
+      </NetworkContextProvider>
     </ThemeProvider>
   );
 }

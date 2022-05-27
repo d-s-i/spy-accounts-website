@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -42,7 +42,7 @@ export function UnfoldingList(props: UnfoldingListProps) {
               justifyContent: "center",
               bgcolor: open ? 'rgba(71, 98, 130, 0.2)' : null,
               pb: open ? 2 : 0,
-              padding: 0,
+              paddingBottom: "3%"
             }}
           >
             <ListItemButton

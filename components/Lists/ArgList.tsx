@@ -25,14 +25,13 @@ export const ArgList = function(props: ArgListProps) {
                 if(_value.type === "BigNumber") {
                     value = BigNumber.from(_value).toHexString();
                 } else {
-                    value = JSON.stringify(_value);
-
+                    value = getArgsJSX(_value);
                 }
                 return (
-                    <MyListItem key={_key}>
+                    <MyList key={_key}>
                         <Typography component="span">{_key}:&nbsp;</Typography>
                         <Typography sx={{ width: "250px"}} component="span" noWrap>{value}</Typography>
-                    </MyListItem>
+                    </MyList>
                 );
             });
         }
@@ -46,9 +45,7 @@ export const ArgList = function(props: ArgListProps) {
                         <MyListItem>
                             <Typography component="span">{`${calldata.name} (${calldata.type})`}</Typography>
                         </MyListItem>
-                        <MyList>
-                            {getArgsJSX(JSON.parse(calldata.value))}
-                        </MyList>
+                        {getArgsJSX(JSON.parse(calldata.value))}
                     </MyList>
                 );
             })}

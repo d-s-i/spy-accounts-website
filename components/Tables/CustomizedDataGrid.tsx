@@ -14,6 +14,7 @@ export function CustomizedDataGrid(props: CustomizedDataGridProps) {
     <span onClick={(event: any) => event.stopPropagation()} style={{ width: "100%" }}>
       <DataGrid
         rows={props.rows}
+        isRowSelectable={() => true}
         columns={props.columns}
         sx={{ color: TypographyColor }}
         hideFooter
@@ -21,7 +22,6 @@ export function CustomizedDataGrid(props: CustomizedDataGridProps) {
         rowHeight={props.rowHeight}
         autoHeight
         showColumnRightBorder
-        
       />
     </span>
   );
