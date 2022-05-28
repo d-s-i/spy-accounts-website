@@ -6,6 +6,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import TreeView from "@mui/lab/TreeView";
 import TreeItem from "@mui/lab/TreeItem";
 
+import { useNetworkContext } from "../../../../context/network-context";;
+
 import { CallsSummary } from "../../../../types";
 import { TypographyColor } from "../../../../utils/constants";
 
@@ -14,8 +16,10 @@ interface FunctionCallsSummaryTreeProps {
 }
 
 export function FunctionCallsSummaryTree(props: FunctionCallsSummaryTreeProps) {
-  const [expanded, setExpanded] = React.useState<string[]>([]);
 
+  const networkContext = useNetworkContext();
+  
+  const [expanded, setExpanded] = React.useState<string[]>([]);
   const [callsSummary, setCallsSummary] = React.useState<{ name: string, amount: string, addresses: string[] }[]>([]);
   
   React.useEffect(() => {
@@ -61,7 +65,18 @@ export function FunctionCallsSummaryTree(props: FunctionCallsSummaryTreeProps) {
           return (
             <TreeItem nodeId={`${i + 1}`} label={`${callSummary.name} (${callSummary.amount})`} key={i + 1}>
               <ul>
-                  {callSummary.addresses.map(addr => <li key={addr}>{addr}</li>)}
+                  {callSummary.addresses.map(addr => {
+                    return (
+                      <a 
+                        key={addr}
+                        target="_blank" 
+                        href={`${networkContext.explorer.voyager.urls.contract}/${addr}`} 
+                        rel="noopener noreferrer"
+                      >
+                        <li >{addr}</li>
+                      </a>
+                    );
+                  })}
               </ul>
             </TreeItem>
           );

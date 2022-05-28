@@ -16,7 +16,7 @@ export function CustomizedDataGrid(props: CustomizedDataGridProps) {
         rows={props.rows}
         isRowSelectable={() => true}
         columns={props.columns}
-        sx={{ color: TypographyColor }}
+        sx={{ color: TypographyColor, marginBottom: "3%" }}
         hideFooter
         headerHeight={30}
         rowHeight={props.rowHeight}

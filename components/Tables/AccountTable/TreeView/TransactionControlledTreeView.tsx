@@ -56,9 +56,9 @@ export function TransactionControlledTreeView(props: TransactionControlledTreeVi
         {props.functionCallsPerAccount?.map((fnCall, i) => {
           return (
             <TreeItem 
+              key={i + 1}
               nodeId={`${i + 1}`} 
               label={`Hash: ${fnCall.transactionHash}`} 
-              key={i + 1}
             >
               <a 
                 target="_blank" 

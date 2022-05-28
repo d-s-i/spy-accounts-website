@@ -1,10 +1,13 @@
+import { BigNumber } from "ethers";
+import { useNetworkContext } from "../../context/network-context";;
+
 import { Typography, Box } from "@mui/material";
 import { OrganizedArgument } from "starknet-analyzer/src/types/organizedStarknet";
 
 import { MyList } from "./MyList";
 import { MyListItem } from "./MyListItem";
 
-import { BigNumber } from "ethers";
+import { isAddress } from "../../utils";
 
 interface ArgListProps {
     calldata: OrganizedArgument[]
@@ -12,13 +15,29 @@ interface ArgListProps {
 
 export const ArgList = function(props: ArgListProps) {
 
+    const networkContext = useNetworkContext();
+  
     const getArgsJSX = function(value: { [key: string]: any }) {
         if(value.type === "BigNumber") {
-            return (
-                <MyListItem>
-                    <Typography sx={{ width: "250px" }} component="span" noWrap>{value.hex}</Typography>
-                </MyListItem>
-            );
+
+            if(isAddress(value.hex)) {
+                console.log(`${value.hex} is an address`);
+                return (
+                    <MyListItem>
+                        <a target="_blank" href={`${networkContext.explorer.voyager.urls.contract}/${value.hex}`} rel="noopener noreferrer">
+                            <Typography sx={{ width: "250px" }} component="span" noWrap>{value.hex}</Typography>
+                        </a>
+                    </MyListItem>
+                );
+            }  else {
+                console.log(`${value.hex} is not an address`);
+                return (
+                    <MyListItem>
+                        <Typography sx={{ width: "250px" }} component="span" noWrap>{value.hex}</Typography>
+                    </MyListItem>
+                );
+            }
+            
         } else {
             return Object.entries(value).map(([_key, _value]) => {
                 let value;

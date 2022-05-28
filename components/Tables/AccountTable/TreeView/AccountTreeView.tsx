@@ -42,7 +42,7 @@ export function AccountTreeView(props: AccountTreeViewProps) {
 
   const handleExpandClick = () => {
     setExpanded((oldExpanded) => {
-      return (oldExpanded.length === 0 && callsSummary) ? ["3", "2"] : [];
+      return (oldExpanded.length === 0 && callsSummary) ? ["0", "2"] : [];
     });
   };
 
@@ -51,14 +51,13 @@ export function AccountTreeView(props: AccountTreeViewProps) {
       <Box sx={{ mb: 1, display: "flex", justifyContent: "flex-end" }}>
         <a target="_blank" href={`${networkContext.explorer.voyager.urls.contract}/${props.accountAddress}`} rel="noopener noreferrer">
           <Button 
-            onClick={handleExpandClick} 
             sx={{ color: TypographyColor, borderColor: TypographyColor, "&:hover": { borderColor: TypographyColor } }} 
             variant="outlined"
             size="small"
           >
             See on explorer
           </Button>
-          </a>
+        </a>
         {callsSummary && callsSummary.length > 0 && <Button 
           onClick={handleExpandClick} 
           sx={{ color: TypographyColor, borderColor: TypographyColor, "&:hover": { borderColor: TypographyColor } }} 
@@ -68,29 +67,31 @@ export function AccountTreeView(props: AccountTreeViewProps) {
           {expanded.length === 0 ? "Expand all" : "Collapse all"}
         </Button>}
       </Box>
-      {props.functionCallsPerAccount && props.functionCallsPerAccount.length > 0 && <TreeView
-        aria-label="controlled"
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-        expanded={expanded}
-        onNodeToggle={handleToggle}
-        multiSelect
-      >
-        <TreeItem 
-          nodeId="3" 
-          label={<Typography sx={{ fontSize: "1.3em" }}>Functions</Typography>}
-          sx={{ marginTop: "3%" }}
+      {props.functionCallsPerAccount && props.functionCallsPerAccount.length > 0 && (
+        <TreeView
+          aria-label="controlled"
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+          expanded={expanded}
+          onNodeToggle={handleToggle}
+          multiSelect
         >
-          <FunctionCallsSummaryTree callsSummary={props.callsSummary} />
-        </TreeItem>
-        <TreeItem 
-          nodeId={`${callsSummary.length + 1}`} 
-          label={<Typography sx={{ fontSize: "1.3em" }}>{`Transactions (${props.functionCallsPerAccount.length})`}</Typography>}
-          sx={{ marginTop: "3%" }}
-        >
-          <TransactionControlledTreeView functionCallsPerAccount={props.functionCallsPerAccount} />
-        </TreeItem>
-      </TreeView>}
+          <TreeItem 
+            nodeId="0" 
+            label={<Typography sx={{ fontSize: "1.3em" }}>Functions</Typography>}
+            sx={{ marginTop: "3%" }}
+          >
+            <FunctionCallsSummaryTree callsSummary={props.callsSummary} />
+          </TreeItem>
+          <TreeItem 
+            nodeId={`${callsSummary.length + 1}`} 
+            label={<Typography sx={{ fontSize: "1.3em" }}>{`Transactions (${props.functionCallsPerAccount.length})`}</Typography>}
+            sx={{ marginTop: "3%" }}
+          >
+            <TransactionControlledTreeView functionCallsPerAccount={props.functionCallsPerAccount} />
+          </TreeItem>
+        </TreeView>
+      )}
       {!props.functionCallsPerAccount || props.functionCallsPerAccount.length === 0 && <Typography>Couldn&apos;t organize transaction for this account.</Typography>}
     </Box>
   );

@@ -28,3 +28,11 @@ export const getNetworkObj = function(networkName: string) {
     throw new Error(`_app.tsx - Wrong network name provided, only "goerli" or "mainnet" are valid values (networkName: ${networkName})`);
   }
 }
+
+export const isAddress = function(hex: string) {
+  if(hex.length === 66) {
+    return true;
+  } else {
+    return false;
+  }
+}

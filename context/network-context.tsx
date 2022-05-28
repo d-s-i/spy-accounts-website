@@ -8,7 +8,7 @@ const networkObj = getNetworkObj(networkName);
 const NetworkContext = React.createContext<Network>(networkObj);
 
 interface NetworkContextProps {
-    children: React.ReactNode
+    children: React.ReactNode;
 }
 
 export function useNetworkContext() {

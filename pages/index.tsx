@@ -126,7 +126,7 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
     const _date = new Date(Date.now());
     const formatedDate = getYesterdayFromDate(_date);
     setDate(formatedDate);
-
+    
     const URL = `${BASE_URL}/${_date}`;
 
     const getAndSetStarknetDay = async function(url: string) {
