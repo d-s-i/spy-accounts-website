@@ -10,8 +10,6 @@ import Button from '@mui/material/Button';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import { TypographyColor } from "../../utils/constants";
 
-const pages = ["Dashboard"];
-
 export const MyAppBar = () => {
 
   return (
@@ -36,16 +34,6 @@ export const MyAppBar = () => {
           >
             Account Analyzer
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                <Link href={`/${page.toLowerCase()}`}>{page}</Link>
-              </Button>
-            ))}
-          </Box>
         </Toolbar>
       </Container>
     </AppBar>

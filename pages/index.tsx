@@ -2,6 +2,9 @@ import React from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 
+import CircularProgress from '@mui/material/CircularProgress';
+import { Box } from "@mui/material"
+
 import { AccountTable } from "../components/Tables/AccountTable/AccountTable";
 import { DateTitle } from "../components/UI/DateTitle";
 import { Container, Typography } from "@mui/material";
@@ -19,6 +22,7 @@ import {
 } from "../types";
 import { FunctionCall } from "starknet-analyzer/src/types/organizedStarknet";
 import { forceCast } from "../utils/index";
+import { TypographyColor } from "../utils/constants";
 
 import { PageProps } from "../types";
 
@@ -90,64 +94,69 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
       };
     }
 
-    // setIsLoading(true);
-    console.log("building accounts");
+    const buildAccountsState = function() {
+      let _intermediaryAccountsState = [];
+      for(const [address, _organizedAccount] of Object.entries(starknetDay.organizedAccountsActivity)) {            
+        const organizedAccount = forceCast(_organizedAccount) as ContractDataFromBDD;
+          const accountState = {
+              address,
+              transactionCount: organizedAccount.transactionCount,
+              organizedTransactions: organizedAccount.organizedTransactions,
+          };
+          _intermediaryAccountsState.push(accountState);
+      }
+  
+      let _finalAccountsState = [];
+      for(const accState of _intermediaryAccountsState) {
+        let callsSummary: CallsSummary = {};
+        const functionCallsPerAccount = accState.organizedTransactions?.map(orgTx => {
+          const { fnCallsPerTx, rowSize } = getFnCallsData(orgTx.organizedFunctionCalls, callsSummary);
+  
+          return {
+            fnCallsPerTx, 
+            rowSize, 
+            transactionHash: orgTx.transactionHash
+          };
+        });
+        _finalAccountsState.push({ ...accState, functionCallsPerAccount, callsSummary }); 
+      }
 
-    let _intermediaryAccountsState = [];
-    for(const [address, _organizedAccount] of Object.entries(starknetDay.organizedAccountsActivity)) {            
-      const organizedAccount = forceCast(_organizedAccount) as ContractDataFromBDD;
-        const accountState = {
-            address,
-            transactionCount: organizedAccount.transactionCount,
-            organizedTransactions: organizedAccount.organizedTransactions,
-        };
-        _intermediaryAccountsState.push(accountState);
+      return _finalAccountsState;
     }
 
-    let _finalAccountsState = [];
-    for(const accState of _intermediaryAccountsState) {
-      let callsSummary: CallsSummary = {};
-      const functionCallsPerAccount = accState.organizedTransactions?.map(orgTx => {
-        const { fnCallsPerTx, rowSize } = getFnCallsData(orgTx.organizedFunctionCalls, callsSummary);
-
-        return {
-          fnCallsPerTx, 
-          rowSize, 
-          transactionHash: orgTx.transactionHash
-        };
-      });
-      _finalAccountsState.push({ ...accState, functionCallsPerAccount, callsSummary }); 
+    const buildAndSetAccountsStates = function() {
+      setIsLoading(true);
+      const finalAccountsStates = buildAccountsState();
+      setAccountsStates(finalAccountsStates);
+      setIsLoading(false);
     }
 
-    setAccountsStates(_finalAccountsState);
-    setIsLoading(false);
-    console.log("finished building accounts");
+    buildAndSetAccountsStates();
 
   }, [starknetDay?.organizedAccountsActivity]);
 
   React.useEffect(() => {
 
-    setIsLoading(true);
-    console.log("fetching starknetDay");
-    const _date = new Date(Date.now());
-    const formatedDate = getYesterdayFromDate(_date);
-    setDate(formatedDate);
-    
-    const URL = `${BASE_URL}/yesterday`;
+ 
+
+    const getAndSetStarknetDay = async function() {
+      setIsLoading(true);
+      const _date = new Date(Date.now());
+      const formatedDate = getYesterdayFromDate(_date);
+      setDate(formatedDate);
+      
+      const URL = `${BASE_URL}/yesterday`;
     // const URL = `${BASE_URL}/${_date}`;
 
-    const getAndSetStarknetDay = async function(url: string) {
       const _res = await fetch(URL);
       const res = await _res.json();
 
       setStarknetDay(res.data.starknetDay);
+      setIsLoading(false);
     }
 
     
-    getAndSetStarknetDay(URL);   
-    setIsLoading(false);
-    console.log("finished fetching starknetDay");
-  
+    getAndSetStarknetDay();   
   }, []);
   
   return (
@@ -159,9 +168,13 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
       <MyAppBar />
       <Container>
         <DateTitle date={date} />
-        {!isLoading && accountsStates.length && <AccountTable accountsStates={accountsStates} />}
+        {!isLoading && accountsStates.length > 0 && <AccountTable accountsStates={accountsStates} />}
         {!isLoading && !accountsStates.length && <Typography>No data for this date</Typography>}
-        {isLoading && <Typography>Loading ...</Typography>}
+        {isLoading && (
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress  sx={{ color: TypographyColor }} />
+          </Box>
+        )}
       </Container>
     </React.Fragment>
   );
