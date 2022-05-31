@@ -25,7 +25,9 @@ import { PageProps } from "../types";
 const Home: NextPage<PageProps> = (props: PageProps) => {
 
   const [date, setDate] = React.useState<string>();
-  const [starknetDay, setStarknetDay] = React.useState<StarknetDay>();
+  const [starknetDay, setStarknetDay] = React.useState<StarknetDay>({
+    organizedAccountsActivity: []
+  });
   const [accountsStates, setAccountsStates] = React.useState<AccountState[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -88,7 +90,9 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
       };
     }
 
-    setIsLoading(true);
+    // setIsLoading(true);
+    console.log("building accounts");
+
     let _intermediaryAccountsState = [];
     for(const [address, _organizedAccount] of Object.entries(starknetDay.organizedAccountsActivity)) {            
       const organizedAccount = forceCast(_organizedAccount) as ContractDataFromBDD;
@@ -117,17 +121,20 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
 
     setAccountsStates(_finalAccountsState);
     setIsLoading(false);
+    console.log("finished building accounts");
 
   }, [starknetDay?.organizedAccountsActivity]);
 
   React.useEffect(() => {
 
     setIsLoading(true);
+    console.log("fetching starknetDay");
     const _date = new Date(Date.now());
     const formatedDate = getYesterdayFromDate(_date);
     setDate(formatedDate);
     
-    const URL = `${BASE_URL}/${_date}`;
+    const URL = `${BASE_URL}/yesterday`;
+    // const URL = `${BASE_URL}/${_date}`;
 
     const getAndSetStarknetDay = async function(url: string) {
       const _res = await fetch(URL);
@@ -136,7 +143,11 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
       setStarknetDay(res.data.starknetDay);
     }
 
-    getAndSetStarknetDay(URL);    
+    
+    getAndSetStarknetDay(URL);   
+    setIsLoading(false);
+    console.log("finished fetching starknetDay");
+  
   }, []);
   
   return (
@@ -148,7 +159,8 @@ const Home: NextPage<PageProps> = (props: PageProps) => {
       <MyAppBar />
       <Container>
         <DateTitle date={date} />
-        {!isLoading && <AccountTable accountsStates={accountsStates} />}
+        {!isLoading && accountsStates.length && <AccountTable accountsStates={accountsStates} />}
+        {!isLoading && !accountsStates.length && <Typography>No data for this date</Typography>}
         {isLoading && <Typography>Loading ...</Typography>}
       </Container>
     </React.Fragment>

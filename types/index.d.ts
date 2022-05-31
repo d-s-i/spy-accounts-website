@@ -22,8 +22,8 @@ export interface PageProps {
 }
 
 export interface StarknetDay {
-    blocks: BlocksTree,
-    sortedContractsActivity: ContractDataTree,
+    blocks?: BlocksTree,
+    sortedContractsActivity?: ContractDataTree,
     organizedAccountsActivity: Required<ContractDataTree>
 }
 
