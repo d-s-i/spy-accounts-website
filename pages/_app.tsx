@@ -29,6 +29,9 @@ let theme = createTheme({
       light: "#262626",
       main: "#1a1a1a",
     },
+    secondary: {
+      main: TypographyColor
+    },
     background: {
       default: "#1a1a1a",
       paper: "#1a1a1a"

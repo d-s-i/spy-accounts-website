@@ -139,38 +139,58 @@ const Home: NextPage = () => {
   React.useEffect(() => {
 
     if(!router.isReady) return;
-    // const timestamp = Date.now();
     if(!router.query.date) throw new Error("No date in url");
-    let timestamp: number;
+
+    let _timestamp: number;
+    let findExact: boolean;
     if(router.query.date === "yesterday") {
-      timestamp = Date.now();
+      findExact = false;
+      _timestamp = Date.now();
     } else {
-      timestamp = new Date(router.query.date as string).getTime();
+      findExact = true;
+      _timestamp = new Date(router.query.date as string).getTime();
     }
 
-    console.log(timestamp);
-    const getAndSetMostRecentStarknetDay = async function(_timestamp: number) {
-      if(!_timestamp || _timestamp < 1653888572) return false;
+    const getAndSetMostRecentStarknetDay = async function(timestamp_: number) {
+      if(!timestamp_ || timestamp_ < 1653888572000) return false;
       setIsLoading(true);
-      const formatedDate = formaTimestampToDateForData(_timestamp);
-      setTimestamp(_timestamp);      
+      const formatedDate = formaTimestampToDateForData(timestamp_);
+      setTimestamp(timestamp_);      
 
-      console.log(`${BASE_URL}/${formatedDate}`, timestamp);
       const _res = await fetch(`${BASE_URL}/${formatedDate}`);
       const res = await _res.json();
       
-      if(!res.data.starknetDay) getAndSetMostRecentStarknetDay(_timestamp - 24 * 3600 * 1000);
+      if(!res.data.starknetDay) getAndSetMostRecentStarknetDay(timestamp_ - 24 * 3600 * 1000);
       setStarknetDay(res.data.starknetDay);
       setIsLoading(false);
       return true;
     }
-    
-    // const fetchData = async function() {
-    //   const _foundData = await getAndSetMostRecentStarknetDay(timestamp);   
-    //   setFoundData(_foundData);
-    // }
 
-    // fetchData();
+    const getAndSetExactStarknetDay = async function() {
+      setIsLoading(true);
+      const formatedDate = formaTimestampToDateForData(_timestamp);
+      setTimestamp(_timestamp);      
+
+      const _res = await fetch(`${BASE_URL}/${formatedDate}`);
+      const res = await _res.json();
+      
+      setStarknetDay(res.data.starknetDay);
+      setIsLoading(false);
+      if(res.data.starknetDay) return true;
+      return false;
+    }
+    
+    const fetchData = async function() {
+      if(findExact) {
+        const _foundData = await getAndSetExactStarknetDay();   
+        setFoundData(_foundData);
+      } else {
+        const _foundData = await getAndSetMostRecentStarknetDay(_timestamp);   
+        setFoundData(_foundData);
+      }
+    }
+
+    fetchData();
   }, [router.isReady]);
   
   return (
@@ -185,7 +205,8 @@ const Home: NextPage = () => {
         {!isLoading && accountsStates.length > 0 && <AccountTable accountsStates={accountsStates} />}
         {!isLoading && !foundData && <Typography>{`No data for ${formatTimestamp(timestamp)}`}</Typography>}
         {(isLoading || !isLoading && accountsStates.length === 0 && foundData) && (
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "15%" }}>
+            <Typography sx={{ marginBottom: "3%" }}>Fetching accounts data ...</Typography>
             <CircularProgress  sx={{ color: TypographyColor }} />
           </Box>
         )}
