@@ -1,28 +1,29 @@
 import React from "react";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import Head from "next/head";
 
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from "@mui/material"
 
-import { AccountTable } from "../components/Tables/AccountTable/AccountTable";
-import { DateTitle } from "../components/UI/DateTitle";
+import { AccountTable } from "../../components/Tables/AccountTable/AccountTable";
+import { DateTitle } from "../../components/UI/DateTitle";
 import { Container, Typography } from "@mui/material";
-import { MyAppBar } from "../components/UI/MyAppBar";
-import { formaTimestampToDateForData, formatTimestamp } from "../utils";
+import { MyAppBar } from "../../components/UI/MyAppBar";
+import { formaTimestampToDateForData, formatTimestamp } from "../../utils";
 
-import { BASE_URL } from "../api/constants";
+import { BASE_URL } from "../../api/constants";
 
 import { BigNumber } from "ethers";
-import { StarknetDay } from "../types";
+import { StarknetDay } from "../../types";
 import { 
   ContractDataFromBDD, 
   AccountState,
   CallsSummary
-} from "../types";
+} from "../../types";
 import { FunctionCall } from "starknet-analyzer/src/types/organizedStarknet";
-import { forceCast } from "../utils/index";
-import { TypographyColor } from "../utils/constants";
+import { forceCast } from "../../utils/index";
+import { TypographyColor } from "../../utils/constants";
 
 const Home: NextPage = () => {
 
@@ -137,30 +138,40 @@ const Home: NextPage = () => {
 
   React.useEffect(() => {
 
-    const timestamp = Date.now();
+    if(!router.isReady) return;
+    // const timestamp = Date.now();
+    if(!router.query.date) throw new Error("No date in url");
+    let timestamp: number;
+    if(router.query.date === "yesterday") {
+      timestamp = Date.now();
+    } else {
+      timestamp = new Date(router.query.date as string).getTime();
+    }
 
-    const getAndSetStarknetDay = async function(_timestamp: number) {
-      if(_timestamp < 1653888572) return false;
+    console.log(timestamp);
+    const getAndSetMostRecentStarknetDay = async function(_timestamp: number) {
+      if(!_timestamp || _timestamp < 1653888572) return false;
       setIsLoading(true);
       const formatedDate = formaTimestampToDateForData(_timestamp);
       setTimestamp(_timestamp);      
 
+      console.log(`${BASE_URL}/${formatedDate}`, timestamp);
       const _res = await fetch(`${BASE_URL}/${formatedDate}`);
       const res = await _res.json();
       
-      if(!res.data.starknetDay) getAndSetStarknetDay(_timestamp - 24 * 3600 * 1000);
+      if(!res.data.starknetDay) getAndSetMostRecentStarknetDay(_timestamp - 24 * 3600 * 1000);
       setStarknetDay(res.data.starknetDay);
       setIsLoading(false);
       return true;
     }
     
-    const fetchData = async function() {
-      const _foundData = await getAndSetStarknetDay(timestamp);   
-      setFoundData(_foundData);
-    }
+    // const fetchData = async function() {
+    //   const _foundData = await getAndSetMostRecentStarknetDay(timestamp);   
+    //   setFoundData(_foundData);
+    // }
 
-    fetchData();
-  }, []);
+    // fetchData();
+  }, [router.isReady]);
   
   return (
     <React.Fragment>

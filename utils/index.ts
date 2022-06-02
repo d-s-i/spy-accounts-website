@@ -1,18 +1,19 @@
 import { networkName, goerliObj, mainnetObj } from "./constants";
 
-export const formatDate = function(date: string | undefined) {
-    if(!date) return "undefined";
+export const formatTimestamp = function(timestamp: number) {
+    if(!timestamp) return "undefined";
     return (
       new Intl.DateTimeFormat("en-US", {
         day: "2-digit",
         month: "long",
         year: "numeric"
-      }).format(Date.parse(date))
+      }).format(timestamp)
     );
 }
 
-export const getYesterdayFromDate = function(_date: Date) {
-  return `${_date.getFullYear()}-${_date.getMonth() + 1}-${_date.getDate() - 1}`;
+export const formaTimestampToDateForData = function(_timestamp: number) {
+  const date = new Date(_timestamp);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
 export const forceCast = function(value: any) {

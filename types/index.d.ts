@@ -17,10 +17,6 @@ export interface Network {
     }
 }
 
-export interface PageProps {
-    networkObj: Network
-}
-
 export interface StarknetDay {
     blocks?: BlocksTree,
     sortedContractsActivity?: ContractDataTree,
