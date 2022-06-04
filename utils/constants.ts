@@ -6,24 +6,20 @@ export const networkName: NetworkName = "goerli";
 
 export const goerliObj = {
     explorer: {
-        voyager: {
-            urls: {
-                base: "https://goerli.voyager.online",
-                contract: "https://goerli.voyager.online/contract",
-                transaction: "https://goerli.voyager.online/tx"
-            }
+        urls: {
+            base: "https://goerli.voyager.online",
+            contract: "https://goerli.voyager.online/contract",
+            transaction: "https://goerli.voyager.online/tx"
         }
     }
 }
 
 export const mainnetObj = {
     explorer: {
-        voyager: {
-            urls: {
-                base: "https://goerli.voyager.online",
-                contract: "https://goerli.voyager.online/contract",
-                transaction: "https://goerli.voyager.online/tx"
-            }
+        urls: {
+            base: "https://goerli.voyager.online",
+            contract: "https://goerli.voyager.online/contract",
+            transaction: "https://goerli.voyager.online/tx"
         }
     }
 }

@@ -10,6 +10,8 @@ import Button from '@mui/material/Button';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import { TypographyColor } from "../../utils/constants";
 
+import { DappButton } from "./DappButton";
+
 interface MyAppBarProps {
   isMainPage?: boolean
 }
@@ -42,19 +44,7 @@ export const MyAppBar = (props: MyAppBarProps) => {
               Account Analyzer
             </Typography>
           </Box>
-          {props.isMainPage && (
-            <Button 
-              sx={{ 
-                backgroundColor: TypographyColor, 
-                borderRadius: "2em",
-                padding: "10px 1% 10px 1%",
-                "&:hover": {
-                  backgroundColor: "#cccccc"
-                }
-              }}
-              onClick={() => router.push("/yesterday")}
-            >Launch App</Button>
-          )}
+          {props.isMainPage && <DappButton />}
         </Toolbar>
       </Container>
     </AppBar>

@@ -6,6 +6,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
+import { TypographyColor } from '../../utils/constants';
 
 const FireNav = styled(List)<{ component?: React.ElementType }>({
   '& .MuiListItemButton-root': {
@@ -32,9 +33,9 @@ export function UnfoldingList(props: UnfoldingListProps) {
   const [open, setOpen] = React.useState(false);
   
   return (
-    <Box sx={{ display: 'flex', justifyContent: "center" }}>
+    <Box sx={{ display: 'flex', justifyContent: "center", marginTop: "1%" }}>
       <Paper elevation={0} sx={{ ...props.containerSx, width: "100%" }}>
-        <FireNav component="nav" disablePadding>
+        <FireNav component="nav" disablePadding sx={{ color: TypographyColor }}>
           <Box
             sx={{
               display: "flex",

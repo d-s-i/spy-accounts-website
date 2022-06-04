@@ -29,7 +29,7 @@ export const TransactionContent = function(props: TransactionContentProps) {
                     sortable: false,
                     renderCell: (params: GridCellParams) => {
                         return (
-                            <a target="_blank" href={`${networkContext.explorer.voyager.urls.contract}/${params.value}`} rel="noopener noreferrer">
+                            <a target="_blank" href={`${networkContext.explorer.urls.contract}/${params.value}`} rel="noopener noreferrer">
                                 <span>{params.value}</span>
                             </a>
                         );

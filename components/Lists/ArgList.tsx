@@ -24,7 +24,7 @@ export const ArgList = function(props: ArgListProps) {
                 console.log(`${value.hex} is an address`);
                 return (
                     <MyListItem>
-                        <a target="_blank" href={`${networkContext.explorer.voyager.urls.contract}/${value.hex}`} rel="noopener noreferrer">
+                        <a target="_blank" href={`${networkContext.explorer.urls.contract}/${value.hex}`} rel="noopener noreferrer">
                             <Typography sx={{ width: "250px" }} component="span" noWrap>{value.hex}</Typography>
                         </a>
                     </MyListItem>

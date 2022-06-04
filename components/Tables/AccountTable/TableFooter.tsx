@@ -9,19 +9,25 @@ import { TypographyColor } from "../../../utils/constants";
 interface TableFooterProps {
     amountToDisplay: number;
     totalAmount: number;
-    setAmountToDisplay: React.Dispatch<React.SetStateAction<number>>
+    setAmountToDisplay: React.Dispatch<React.SetStateAction<number>>;
+    batch?: number;
 }
 
 export const TableFooter = function(props: TableFooterProps) {
 
+    const amountToAdd = props.batch || 1;
+
     const addAmountHandler = function() {
-        props.setAmountToDisplay((prevState: number) => prevState + 1);
+        props.setAmountToDisplay((prevState: number) => prevState + amountToAdd);
     }
     const removeAmountHandler = function() {
-        props.setAmountToDisplay((prevState: number) => prevState - 1);
+        props.setAmountToDisplay((prevState: number) => prevState - amountToAdd);
     }
     const addAll = function() {
         props.setAmountToDisplay(props.totalAmount);
+    }
+    const removeAll = function() {
+        props.setAmountToDisplay(amountToAdd);
     }
 
     return (
@@ -36,6 +42,11 @@ export const TableFooter = function(props: TableFooterProps) {
                 </Typography>
             </Box>
             <Box sx={{ width: "50%", display: "flex", justifyContent: "flex-end" }}>
+                {(props.amountToDisplay === props.totalAmount) && (
+                    <IconButton aria-label="all-all" onClick={removeAll} >
+                       <DoubleArrowIcon sx={{ fontSize: "1.5em", transform: "rotate(-90deg)", color: TypographyColor }} />
+                    </IconButton>
+                )}
                 {(props.amountToDisplay !== props.totalAmount) && (
                     <IconButton aria-label="all-all" onClick={addAll} >
                        <DoubleArrowIcon sx={{ fontSize: "1.5em", transform: "rotate(90deg)", color: TypographyColor }} />

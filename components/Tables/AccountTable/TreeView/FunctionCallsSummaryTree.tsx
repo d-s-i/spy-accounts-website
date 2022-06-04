@@ -70,7 +70,7 @@ export function FunctionCallsSummaryTree(props: FunctionCallsSummaryTreeProps) {
                       <a 
                         key={addr}
                         target="_blank" 
-                        href={`${networkContext.explorer.voyager.urls.contract}/${addr}`} 
+                        href={`${networkContext.explorer.urls.contract}/${addr}`} 
                         rel="noopener noreferrer"
                       >
                         <li >{addr}</li>

@@ -7,20 +7,18 @@ export type NetworkName = "goerli" | "mainnet";
 
 export interface Network {
     explorer: {
-        voyager: {
-            urls: {
-                base: string,
-                contract: string,
-                transaction: string
-            }
+        urls: {
+            base: string,
+            contract: string,
+            transaction: string
         }
     }
 }
 
 export interface StarknetDay {
-    blocks?: BlocksTree,
-    sortedContractsActivity?: ContractDataTree,
-    organizedAccountsActivity: Required<ContractDataTree>
+    blocks?: BlocksTree;
+    sortedContractsActivity?: ContractDataTree;
+    organizedAccountsActivity: Required<ContractDataTree>;
 }
 
 export interface ContractDataTreeFromBDD {
@@ -28,36 +26,41 @@ export interface ContractDataTreeFromBDD {
 }
 
 export interface ContractDataFromBDD { 
-    transactionCount: number, 
-    type: string,
-    rawTransactions: InvokeFunctionTransaction[],
-    organizedTransactions?: OrganizedTransactionFromBDD[]
+    transactionCount: number; 
+    type: string;
+    rawTransactions: InvokeFunctionTransaction[];
+    organizedTransactions?: OrganizedTransactionFromBDD[];
 } 
 
 export interface OrganizedTransactionFromBDD {
-    transactionHash: string,
-    organizedFunctionCalls: FunctionCall[]
+    transactionHash: string;
+    organizedFunctionCalls: FunctionCall[];
 }
 
 export interface OrganizedFunctionCallFromBDD {
-    id: number,
-    name: string,
-    to: string,
-    calldata: any
+    id: number;
+    name: string;
+    to: string;
+    calldata: any;
 }
 
-export interface CallsSummary { [key: string]: { amount: number, addresses: string[]} }
+export interface CallsSummary { 
+    [key: string]: { 
+        amount: number;
+        addresses: string[];
+    }
+}
 
 export interface FunctionCallPerAccount {
-    rowSize: { height: number, width: number },
-    fnCallsPerTx: OrganizedFunctionCallFromBDD[],
+    rowSize: { height: number, width: number };
+    fnCallsPerTx: OrganizedFunctionCallFromBDD[];
     transactionHash: string
 }
 
 export interface AccountState {
-    address: string,
-    transactionCount: number,
-    organizedTransactions: OrganizedTransactionFromBDD[] | undefined,
-    functionCallsPerAccount: FunctionCallPerAccount[] | undefined,
-    callsSummary: CallsSummary
+    address: string;
+    transactionCount: number;
+    organizedTransactions: OrganizedTransactionFromBDD[] | undefined;
+    functionCallsPerAccount: FunctionCallPerAccount[] | undefined;
+    callsSummary: CallsSummary;
 }

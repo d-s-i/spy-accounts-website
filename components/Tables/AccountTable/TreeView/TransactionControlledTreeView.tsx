@@ -8,6 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import TreeView from "@mui/lab/TreeView";
 import TreeItem from "@mui/lab/TreeItem";
+import { TableFooter } from "../TableFooter";
 
 import { FunctionCallPerAccount } from "../../../../types";
 import { TransactionContent } from "../TransactionContent";
@@ -19,6 +20,7 @@ interface TransactionControlledTreeViewProps {
 
 export function TransactionControlledTreeView(props: TransactionControlledTreeViewProps) {
   const [expanded, setExpanded] = React.useState<string[]>([]);
+  const [amount, setAmount] = React.useState<number>(5);
 
   const networkContext = useNetworkContext();
 
@@ -62,7 +64,7 @@ export function TransactionControlledTreeView(props: TransactionControlledTreeVi
             >
               <a 
                 target="_blank" 
-                href={`${networkContext.explorer.voyager.urls.transaction}/${fnCall.transactionHash}`} 
+                href={`${networkContext.explorer.urls.transaction}/${fnCall.transactionHash}`} 
                 rel="noopener noreferrer"
               >
                 <Typography sx={{ padding: "2% 0% 2% 0%", textDecoration: "underline" }} align="center">Click to see tx on explorer</Typography>
@@ -74,7 +76,31 @@ export function TransactionControlledTreeView(props: TransactionControlledTreeVi
               />
             </TreeItem>
           );
-        })}
+        }).slice(0, amount)}
+        <TableFooter 
+          amountToDisplay={amount}
+          totalAmount={props.functionCallsPerAccount.length}
+          setAmountToDisplay={setAmount}
+          batch={5}
+        />
+        {/* <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Button 
+            color="secondary" 
+            sx={{  textTransform: "none" }} 
+            onClick={() => setAmount((prevAmount) => prevAmount + 5)} 
+            variant="text"
+          >
+            +
+          </Button>
+          <Button 
+            color="secondary" 
+            sx={{  textTransform: "none" }} 
+            onClick={() => setAmount((prevAmount) => prevAmount - 5)} 
+            variant="text"
+          >
+            -
+          </Button>
+        </Box> */}
       </TreeView>}
     </Box>
   );

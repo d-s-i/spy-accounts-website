@@ -38,6 +38,63 @@ const Home: NextPage = () => {
   const [foundData, setFoundData] = React.useState<boolean>(false);
 
   React.useEffect(() => {
+
+    if(!router.isReady) return;
+    if(!router.query.date) throw new Error("No date in url");
+
+    let _timestamp: number;
+    let findExact: boolean;
+    if(router.query.date === "yesterday") {
+      findExact = false;
+      _timestamp = Date.now();
+    } else {
+      findExact = true;
+      _timestamp = new Date(router.query.date as string).getTime();
+    }
+
+    const getAndSetMostRecentStarknetDay = async function(timestamp_: number) {
+      if(!timestamp_ || timestamp_ < 1653888572000) return false;
+      setIsLoading(true);
+      const formatedDate = formaTimestampToDateForData(timestamp_);
+      setTimestamp(timestamp_);      
+
+      const _res = await fetch(`${BASE_URL}/${formatedDate}`);
+      const res = await _res.json();
+      
+      if(!res.data.starknetDay) getAndSetMostRecentStarknetDay(timestamp_ - 24 * 3600 * 1000);
+      setStarknetDay(res.data.starknetDay);
+      setIsLoading(false);
+      return true;
+    }
+
+    const getAndSetExactStarknetDay = async function() {
+      setIsLoading(true);
+      const formatedDate = formaTimestampToDateForData(_timestamp);
+      setTimestamp(_timestamp);      
+
+      const _res = await fetch(`${BASE_URL}/${formatedDate}`);
+      const res = await _res.json();
+      
+      setStarknetDay(res.data.starknetDay);
+      setIsLoading(false);
+      if(res.data.starknetDay) return true;
+      return false;
+    }
+    
+    const fetchData = async function() {
+      if(findExact) {
+        const _foundData = await getAndSetExactStarknetDay();   
+        setFoundData(_foundData);
+      } else {
+        const _foundData = await getAndSetMostRecentStarknetDay(_timestamp);   
+        setFoundData(_foundData);
+      }
+    }
+
+    fetchData();
+  }, [router.isReady, router.query.date]);
+
+  React.useEffect(() => {
     if(!starknetDay?.organizedAccountsActivity) return;
     const getArgsSizes = function(value: { [key: string]: any }) {
       let argsAmount = 0;
@@ -135,63 +192,6 @@ const Home: NextPage = () => {
     buildAndSetAccountsStates();
 
   }, [starknetDay?.organizedAccountsActivity]);
-
-  React.useEffect(() => {
-
-    if(!router.isReady) return;
-    if(!router.query.date) throw new Error("No date in url");
-
-    let _timestamp: number;
-    let findExact: boolean;
-    if(router.query.date === "yesterday") {
-      findExact = false;
-      _timestamp = Date.now();
-    } else {
-      findExact = true;
-      _timestamp = new Date(router.query.date as string).getTime();
-    }
-
-    const getAndSetMostRecentStarknetDay = async function(timestamp_: number) {
-      if(!timestamp_ || timestamp_ < 1653888572000) return false;
-      setIsLoading(true);
-      const formatedDate = formaTimestampToDateForData(timestamp_);
-      setTimestamp(timestamp_);      
-
-      const _res = await fetch(`${BASE_URL}/${formatedDate}`);
-      const res = await _res.json();
-      
-      if(!res.data.starknetDay) getAndSetMostRecentStarknetDay(timestamp_ - 24 * 3600 * 1000);
-      setStarknetDay(res.data.starknetDay);
-      setIsLoading(false);
-      return true;
-    }
-
-    const getAndSetExactStarknetDay = async function() {
-      setIsLoading(true);
-      const formatedDate = formaTimestampToDateForData(_timestamp);
-      setTimestamp(_timestamp);      
-
-      const _res = await fetch(`${BASE_URL}/${formatedDate}`);
-      const res = await _res.json();
-      
-      setStarknetDay(res.data.starknetDay);
-      setIsLoading(false);
-      if(res.data.starknetDay) return true;
-      return false;
-    }
-    
-    const fetchData = async function() {
-      if(findExact) {
-        const _foundData = await getAndSetExactStarknetDay();   
-        setFoundData(_foundData);
-      } else {
-        const _foundData = await getAndSetMostRecentStarknetDay(_timestamp);   
-        setFoundData(_foundData);
-      }
-    }
-
-    fetchData();
-  }, [router.isReady]);
   
   return (
     <React.Fragment>
@@ -204,7 +204,7 @@ const Home: NextPage = () => {
         {!isLoading && accountsStates.length > 0 && <DateTitle timestamp={timestamp} />}
         {!isLoading && accountsStates.length > 0 && <AccountTable accountsStates={accountsStates} />}
         {!isLoading && !foundData && <Typography>{`No data for ${formatTimestamp(timestamp)}`}</Typography>}
-        {(isLoading || !isLoading && accountsStates.length === 0 && foundData) && (
+        {(isLoading || accountsStates.length === 0 && foundData) && (
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "15%" }}>
             <Typography sx={{ marginBottom: "3%" }}>Fetching accounts data ...</Typography>
             <CircularProgress  sx={{ color: TypographyColor }} />

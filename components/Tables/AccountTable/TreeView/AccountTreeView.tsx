@@ -34,7 +34,7 @@ export function AccountTreeView(props: AccountTreeViewProps) {
     }
     setCallsSummary(listItems);
 
-  }, []);
+  }, [props.callsSummary]);
 
   const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
     setExpanded(nodeIds);
@@ -49,7 +49,7 @@ export function AccountTreeView(props: AccountTreeViewProps) {
   return (
     <Box sx={{ flexGrow: 1, overflow: "auto" }}>
       <Box sx={{ mb: 1, display: "flex", justifyContent: "flex-end" }}>
-        <a target="_blank" href={`${networkContext.explorer.voyager.urls.contract}/${props.accountAddress}`} rel="noopener noreferrer">
+        <a target="_blank" href={`${networkContext.explorer.urls.contract}/${props.accountAddress}`} rel="noopener noreferrer">
           <Button 
             sx={{ color: TypographyColor, borderColor: TypographyColor, "&:hover": { borderColor: TypographyColor } }} 
             variant="outlined"
