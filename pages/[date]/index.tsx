@@ -4,7 +4,9 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 
 import CircularProgress from '@mui/material/CircularProgress';
-import { Box } from "@mui/material"
+import { Box, Button } from "@mui/material";
+import TextField from '@mui/material/TextField';
+import { styled } from '@mui/material/styles';
 
 import { AccountTable } from "../../components/Tables/AccountTable/AccountTable";
 import { DateTitle } from "../../components/UI/DateTitle";
@@ -25,21 +27,50 @@ import { FunctionCall } from "starknet-analyzer/src/types/organizedStarknet";
 import { forceCast } from "../../utils/index";
 import { TypographyColor } from "../../utils/constants";
 
+const CssTextField = styled(TextField)({
+  "& label.Mui-focused": {
+    color: TypographyColor
+  },
+  "& label": {
+    color: TypographyColor
+  },
+  "& .MuiTextField-root": {
+    color: TypographyColor
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: TypographyColor,
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: TypographyColor,
+    },
+    '&:hover fieldset': {
+      borderColor: TypographyColor,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: TypographyColor,
+    }
+  },
+});
+
 const Home: NextPage = () => {
 
   const router = useRouter();
 
+  const [dateInput, setDateInput] = React.useState<string>("");
   const [timestamp, setTimestamp] = React.useState<number>(0);
   const [starknetDay, setStarknetDay] = React.useState<StarknetDay>({
     organizedAccountsActivity: []
   });
   const [accountsStates, setAccountsStates] = React.useState<AccountState[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [foundData, setFoundData] = React.useState<boolean>(false);
 
   React.useEffect(() => {
 
+    console.log("router.isReady", router.isReady);
     if(!router.isReady) return;
+    console.log("router.query.date", router.query.date);
     if(!router.query.date) throw new Error("No date in url");
 
     let _timestamp: number;
@@ -51,11 +82,13 @@ const Home: NextPage = () => {
       findExact = true;
       _timestamp = new Date(router.query.date as string).getTime();
     }
+    console.log("findExact", findExact)
 
     const getAndSetMostRecentStarknetDay = async function(timestamp_: number) {
       if(!timestamp_ || timestamp_ < 1653888572000) return false;
       setIsLoading(true);
       const formatedDate = formaTimestampToDateForData(timestamp_);
+      console.log(`setting timestamp to ${timestamp_}`);
       setTimestamp(timestamp_);      
 
       const _res = await fetch(`${BASE_URL}/${formatedDate}`);
@@ -82,6 +115,7 @@ const Home: NextPage = () => {
     }
     
     const fetchData = async function() {
+      console.log("running fetchData")
       if(findExact) {
         const _foundData = await getAndSetExactStarknetDay();   
         setFoundData(_foundData);
@@ -90,7 +124,7 @@ const Home: NextPage = () => {
         setFoundData(_foundData);
       }
     }
-
+    console.log("running useEffect with router.query.date")
     fetchData();
   }, [router.isReady, router.query.date]);
 
@@ -201,10 +235,25 @@ const Home: NextPage = () => {
       </Head>
       <MyAppBar />
       <Container>
-        {!isLoading && accountsStates.length > 0 && <DateTitle timestamp={timestamp} />}
+        {!isLoading && accountsStates.length > 0 && <DateTitle timestamp={timestamp} />} 
+        {!isLoading && accountsStates.length > 0 && (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <CssTextField 
+              id="outlined-basic" 
+              label="Date"
+              size="small" 
+              placeholder="2022-05-19"
+              sx={{ input: { color: TypographyColor } }} 
+              onChange={(e) => setDateInput(e.target.value)}
+            />
+            <Button onClick={() => {
+              router.push(`/${dateInput}`);
+            }} color="secondary">Get Account Data</Button>
+          </Box>
+        )}
         {!isLoading && accountsStates.length > 0 && <AccountTable accountsStates={accountsStates} />}
         {!isLoading && !foundData && <Typography>{`No data for ${formatTimestamp(timestamp)}`}</Typography>}
-        {(isLoading || accountsStates.length === 0 && foundData) && (
+        {(isLoading || (!isLoading && accountsStates.length === 0 && foundData)) && (
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "15%" }}>
             <Typography sx={{ marginBottom: "3%" }}>Fetching accounts data ...</Typography>
             <CircularProgress  sx={{ color: TypographyColor }} />

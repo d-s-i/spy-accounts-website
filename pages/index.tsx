@@ -45,6 +45,11 @@ const Home: NextPage = () => {
                 <a href="https://github.com/d-s-i/spy-accounts-api" target="_blank" rel="noopener noreferrer" style={{ fontWeight: "bold" }}>organized accouns api</a>
               </Typography>
             </MyListItem>
+            <MyListItem>
+              <Typography>
+                <a href="https://github.com/d-s-i/starknet-account-analyzer" target="_blank" rel="noopener noreferrer" style={{ fontWeight: "bold" }}>account analyzer package</a>
+              </Typography>
+            </MyListItem>
           </MyList>
           <Box sx ={{ display: "flex", justifyContent: "center" }}>
             <DappButton />
