@@ -4,14 +4,14 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 
 import CircularProgress from '@mui/material/CircularProgress';
-import { Box, Button } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import TextField from '@mui/material/TextField';
 import { styled } from '@mui/material/styles';
 
 import { AccountTable } from "../../components/Tables/AccountTable/AccountTable";
 import { DateTitle } from "../../components/UI/DateTitle";
-import { Container, Typography } from "@mui/material";
 import { MyAppBar } from "../../components/UI/MyAppBar";
+import { DateInput } from "../../components/DateInput";
 import { formaTimestampToDateForData, formatTimestamp } from "../../utils";
 
 import { BASE_URL } from "../../api/constants";
@@ -68,9 +68,7 @@ const Home: NextPage = () => {
 
   React.useEffect(() => {
 
-    console.log("router.isReady", router.isReady);
     if(!router.isReady) return;
-    console.log("router.query.date", router.query.date);
     if(!router.query.date) throw new Error("No date in url");
 
     let _timestamp: number;
@@ -82,13 +80,11 @@ const Home: NextPage = () => {
       findExact = true;
       _timestamp = new Date(router.query.date as string).getTime();
     }
-    console.log("findExact", findExact)
 
     const getAndSetMostRecentStarknetDay = async function(timestamp_: number) {
       if(!timestamp_ || timestamp_ < 1653888572000) return false;
       setIsLoading(true);
       const formatedDate = formaTimestampToDateForData(timestamp_);
-      console.log(`setting timestamp to ${timestamp_}`);
       setTimestamp(timestamp_);      
 
       const _res = await fetch(`${BASE_URL}/${formatedDate}`);
@@ -108,6 +104,7 @@ const Home: NextPage = () => {
       const _res = await fetch(`${BASE_URL}/${formatedDate}`);
       const res = await _res.json();
       
+      console.log("setting exact starknet day to", res.data.starknetDay)
       setStarknetDay(res.data.starknetDay);
       setIsLoading(false);
       if(res.data.starknetDay) return true;
@@ -118,18 +115,26 @@ const Home: NextPage = () => {
       console.log("running fetchData")
       if(findExact) {
         const _foundData = await getAndSetExactStarknetDay();   
+        // if(!_foundData) {
+          
+        // }
+        console.log("_foundData", _foundData);
         setFoundData(_foundData);
       } else {
         const _foundData = await getAndSetMostRecentStarknetDay(_timestamp);   
+        console.log("_foundData", _foundData);
         setFoundData(_foundData);
       }
+
     }
-    console.log("running useEffect with router.query.date")
     fetchData();
   }, [router.isReady, router.query.date]);
 
   React.useEffect(() => {
-    if(!starknetDay?.organizedAccountsActivity) return;
+    if(!starknetDay?.organizedAccountsActivity) {
+      setAccountsStates([]);
+      return;
+    };
     const getArgsSizes = function(value: { [key: string]: any }) {
       let argsAmount = 0;
       if(value.type === "BigNumber") {
@@ -225,7 +230,7 @@ const Home: NextPage = () => {
     }
     buildAndSetAccountsStates();
 
-  }, [starknetDay?.organizedAccountsActivity]);
+  }, [starknetDay]);
   
   return (
     <React.Fragment>
@@ -236,21 +241,7 @@ const Home: NextPage = () => {
       <MyAppBar />
       <Container>
         {!isLoading && accountsStates.length > 0 && <DateTitle timestamp={timestamp} />} 
-        {!isLoading && accountsStates.length > 0 && (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <CssTextField 
-              id="outlined-basic" 
-              label="Date"
-              size="small" 
-              placeholder="2022-05-19"
-              sx={{ input: { color: TypographyColor } }} 
-              onChange={(e) => setDateInput(e.target.value)}
-            />
-            <Button onClick={() => {
-              router.push(`/${dateInput}`);
-            }} color="secondary">Get Account Data</Button>
-          </Box>
-        )}
+        {((!isLoading && accountsStates.length > 0) || (!isLoading && !foundData))&& <DateInput />}
         {!isLoading && accountsStates.length > 0 && <AccountTable accountsStates={accountsStates} />}
         {!isLoading && !foundData && <Typography>{`No data for ${formatTimestamp(timestamp)}`}</Typography>}
         {(isLoading || (!isLoading && accountsStates.length === 0 && foundData)) && (
